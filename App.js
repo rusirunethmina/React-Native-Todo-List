@@ -1,16 +1,41 @@
 import React, {useState} from "react";
-import { Text, StyleSheet, View, KeyboardAvoidingView, Platform,TextInput } from "react-native";
+import { Text, StyleSheet, View, KeyboardAvoidingView, Platform,TextInput, Keyboard } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Task from "./components/Task";
 
 const HomeScreen = () => {
+
+     const [task, setTask] = useState();
+     const [taskItems, setTaskItems] = useState([]);
+ 
+     const handleAddTask = () => {   //admin items to array
+      //  console.log(task);
+        Keyboard.dismiss();
+        setTaskItems([...taskItems, task])
+        setTask(null);
+     };
+
+     const completeTask = (index) => {  //delete tasks
+       let itemsCopy = [...taskItems];
+       itemsCopy.splice(index, 1);
+       setTaskItems(itemsCopy);
+     };
+
+  
   return (
     <View style={styles.container} >
       <View style={styles.tasksWrapper}>
         <Text style={styles.sectionTitle}>Today's tasks</Text>
            <View style={styles.items}>
-              <Task  text={'Task 1'}/>
-              <Task text={'Task 2'}/>
+             {
+               taskItems.map((item, index) => {  //map the array
+                return  (
+                  <TouchableOpacity key={index} onPress={() => completeTask(index)}>
+                    <Task text={item}/>
+                  </TouchableOpacity>
+                ); 
+               })
+             }
            </View>
       </View>
     
@@ -18,8 +43,8 @@ const HomeScreen = () => {
            behavior={Platform.OS === "ios" ? "padding" : "height"}
            style={styles.writeTaskWrapper}>
 
-            <TextInput style={styles.input} placeholder={'Write a task'}/>
-            <TouchableOpacity>
+            <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={text => setTask(text)}/>
+            <TouchableOpacity onPress={() => handleAddTask()}>
               <View style={styles.addWrapper}>
                  <Text style={styles.addText}>+</Text>
               </View>
